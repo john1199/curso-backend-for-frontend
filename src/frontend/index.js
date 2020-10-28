@@ -13,7 +13,7 @@ const preloadedState = window.__PRELOADED_STATE__;
 const store = createStore(
   reducer,
   preloadedState,
-  //funciones dentro de nuestros actions
+  // funciones dentro de nuestros actions
   composeEnhancers(applyMiddleware(thunk))
 );
 const history = createBrowserHistory();

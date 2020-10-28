@@ -1,30 +1,34 @@
-const passport = require('passport');
-const { BasicStrategy } = require('passport-http');
-const boom = require('@hapi/boom');
-const bcrypt = require('bcrypt');
+/* eslint-disable consistent-return */
+/* eslint-disable func-names */
+const passport = require("passport");
+const { BasicStrategy } = require("passport-http");
+const boom = require("@hapi/boom");
+const axios = require("axios");
 
-const UsersService = require('../../../services/users');
+require("dotenv").config();
 
 passport.use(
-  new BasicStrategy(async function(email, password, cb) {
-    const userService = new UsersService();
-
+  new BasicStrategy(async function (email, password, cb) {
     try {
-      const user = await userService.getUser({ email });
+      const { data, status } = await axios({
+        url: `${process.env.API_URL}/api/auth/sign-in`,
+        method: "post",
+        auth: {
+          password,
+          username: email,
+        },
+        data: {
+          apiKeyToken: process.env.API_KEY_TOKEN,
+        },
+      });
 
-      if (!user) {
+      if (!data || status !== 200) {
         return cb(boom.unauthorized(), false);
       }
 
-      if (!(await bcrypt.compare(password, user.password))) {
-        return cb(boom.unauthorized(), false);
-      }
-
-      delete user.password;
-
-      return cb(null, user);
+      return cb(null, data);
     } catch (error) {
-      return cb(error);
+      cb(error);
     }
   })
 );
