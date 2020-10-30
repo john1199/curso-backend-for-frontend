@@ -1,10 +1,10 @@
-/* eslint-disable no-shadow */
 /* eslint-disable func-names */
 /* eslint-disable global-require */
+
 import express from "express";
-import dotenv from "dotenv";
 import helmet from "helmet";
 import webpack from "webpack";
+import dotenv from "dotenv";
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom";
@@ -22,7 +22,6 @@ import Layout from "../frontend/components/Layout";
 import initialState from "../frontend/initialState";
 import serverRoutes from "../frontend/routes/serverRoutes";
 import getManifest from "./getManifest";
-
 
 dotenv.config();
 
@@ -94,33 +93,32 @@ const renderApp = (req, res) => {
   );
   res.send(setResponse(html, preloadedState, req.hashManifest));
 };
-/*
+
 app.post("/auth/sign-in", async function (req, res, next) {
   passport.authenticate("basic", function (error, data) {
+    if (error || !data) {
+      next(boom.unauthorized());
+    }
     try {
-      if (error || !data) {
-        next(boom.unauthorized());
-      }
-
-      req.login(data, { session: false }, async function (error) {
-        if (error) {
-          next(error);
+      req.login(data, { session: false }, async function (err) {
+        if (err) {
+          next(err);
         }
 
         const { token, ...user } = data;
 
         res.cookie("token", token, {
-          httpOnly: !config.dev,
-          secure: !config.dev,
+          httpOnly: !(ENV === "development"),
+          secure: !(ENV === "development"),
         });
 
         res.status(200).json(user);
       });
-    } catch (error) {
-      next(error);
+    } catch (er) {
+      next(er);
     }
   })(req, res, next);
-}); */
+});
 
 app.post("/auth/sign-up", async function (req, res, next) {
   const { body: user } = req;
